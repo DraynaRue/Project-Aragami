@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NormalProjectile.h"
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
@@ -19,8 +20,8 @@ public:
 	UPROPERTY(Category = Camera, VisibleAnywhere, BlueprintReadOnly)
 	class UCameraComponent* PlayerCameraComponent;
 
-	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
-	float timeRemaining;
+	//UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	//TSubclassOf<NormalProjectile>* AmmoType;
 
 protected:
 	float startTime;
