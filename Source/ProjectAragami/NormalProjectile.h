@@ -27,7 +27,28 @@ public:
 	ANormalProjectile();
 
 	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
-	float DamageValue;
+	float BaseDamage;
+
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	float DamageMod;
+
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	float BaseReload;
+
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	float ReloadMod;
+
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	float BaseFireRate;
+
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	float FireRateMod;
+
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	float BaseMagazine;
+
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	float MagazineMod;
 
 	/** Function to handle the projectile hitting something */
 	UFUNCTION()

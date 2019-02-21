@@ -20,8 +20,8 @@ public:
 	UPROPERTY(Category = Camera, VisibleAnywhere, BlueprintReadOnly)
 	class UCameraComponent* PlayerCameraComponent;
 
-	//UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
-	//TSubclassOf<NormalProjectile>* AmmoType;
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	class TSubclassOf<ANormalProjectile> AmmoType;
 
 protected:
 	float startTime;
