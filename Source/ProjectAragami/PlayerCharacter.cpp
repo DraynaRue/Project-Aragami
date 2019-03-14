@@ -65,22 +65,29 @@ void APlayerCharacter::BeginPlay()
 
 void APlayerCharacter::OnFire()
 {
-	if (Gun != NULL)
+	UWorld* const World = GetWorld();
+	if (World != NULL)
 	{
-		UWorld* const World = GetWorld();
-		if (World != NULL)
+		FHitResult OutHit;
+		FVector Start = FP_Gun->GetComponentLocation();
+
+		FVector ForwardVector = FirstPersonCameraComponent->GetForwardVector();
+		FVector End = ((ForwardVector * 1000.0f) + Start);
+		FCollisionQueryParams CollisionParams;
+
+		DrawDebugLine(World, Start, End, FColor::Green, true);
+
+		bool isHit = World->LineTraceSingleByChannel(OutHit, Start, End, ECC_Visibility, CollisionParams);
+
+		if (isHit)
 		{
-			FHitResult OutHit;
-			FVector Start = FP_Gun->GetComponentLocation();
-
-			FVector ForwardVector = FirstPersonCameraComponent->GetForwardVector();
-			FVector End = ((ForwardVector * 1000.0f) + Start);
-			FCollisionQueryParams CollisionParams;
-
-			DrawDebugLine(World, Start, End, FColor::Green, true);
-
-			bool isHit = World->LineTraceSingleByChannel(OutHit, Start, End, ECC_Visibility, CollisionParams);
-
+			if (OutHit.bBlockingHit)
+			{
+				if (GEngine)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("You Are Hitting: %s"), *OutHit.GetActor()->GetName()));
+				}
+			}
 		}
 	}
 
