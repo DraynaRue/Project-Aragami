@@ -25,3 +25,8 @@ void ANormalGun::Tick(float DeltaTime)
 
 }
 
+void ANormalGun::FireGun()
+{
+
+}
+
