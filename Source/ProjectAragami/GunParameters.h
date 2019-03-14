@@ -15,15 +15,15 @@ class PROJECTARAGAMI_API AGunParameters : public AInfo
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(Category = GunParameters, EditAnywhere, BluepritnReadWrite)
+	UPROPERTY(Category = GunParameters, EditAnywhere, BlueprintReadWrite)
 	float BaseDamage;
 
-	UPROPERTY(Category = GunParameters, EditAnywhere, BluepritnReadWrite)
+	UPROPERTY(Category = GunParameters, EditAnywhere, BlueprintReadWrite)
 	float BaseReload;
 
-	UPROPERTY(Category = GunParameters, EditAnywhere, BluepritnReadWrite)
+	UPROPERTY(Category = GunParameters, EditAnywhere, BlueprintReadWrite)
 	float BaseFireRate;
 
-	UPROPERTY(Category = GunParameters, EditAnywhere, BluepritnReadWrite)
+	UPROPERTY(Category = GunParameters, EditAnywhere, BlueprintReadWrite)
 	float BaseMagSize;
 };
