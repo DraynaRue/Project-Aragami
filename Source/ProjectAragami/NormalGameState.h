@@ -13,8 +13,22 @@ UCLASS()
 class PROJECTARAGAMI_API ANormalGameState : public AGameStateBase
 {
 	GENERATED_BODY()
-	
-	
-	
+
+public:
+	// Modifier added to BaseDamage
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	float DamageMod;
+
+	// Modifier added to BaseReload
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	float ReloadMod;
+
+	// Modifier added to BaseFireRate
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	float FireRateMod;
+
+	// Modifier added to BaseMagazine
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	float MagazineMod;
 	
 };
