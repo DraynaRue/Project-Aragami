@@ -43,6 +43,22 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseLookUpRate;
 
+	// Damage dealt to enemies per hit w/o modifiers
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	float BaseDamage;
+
+	// Time between magazines w/o modifiers
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	float BaseReload;
+
+	// Time between shots w/o modifiers
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	float BaseFireRate;
+
+	// Number of shots before reload w/o modifers
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	float BaseMagazine;
+
 	/** Gun muzzle's offset from the characters location */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	FVector GunOffset;
