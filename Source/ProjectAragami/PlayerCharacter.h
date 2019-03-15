@@ -71,13 +71,15 @@ protected:
 	float startTime;
 	float currentTime;
 
+	bool isFiring;
 	bool canFire;
 	FTimerHandle FireRateTimer_TimerHandle;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	void OnFire();
+	void StartFiring();
+	void StopFiring();
 	void FireRateTimer_Expired();
 
 	// handles moving forwards / backwards

@@ -58,63 +58,22 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	isFiring = false;
 	canFire = true;
 
 	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
 	FP_Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));	
 }
 
-void APlayerCharacter::OnFire()
+void APlayerCharacter::StartFiring()
 {
-	if (canFire)
-	{
-		UWorld* const World = GetWorld();
-		if (World != NULL)
-		{
+	isFiring = true;
 
-			FHitResult OutHit;
-			FVector Start = FP_Gun->GetComponentLocation();
+}
 
-			FVector ForwardVector = FirstPersonCameraComponent->GetForwardVector();
-			FVector End = ((ForwardVector * 1000.0f) + Start);
-			FCollisionQueryParams CollisionParams;
-
-			DrawDebugLine(World, Start, End, FColor::Green, true);
-
-			bool isHit = World->LineTraceSingleByChannel(OutHit, Start, End, ECC_Visibility, CollisionParams);
-
-			canFire = false;
-			GetWorldTimerManager().SetTimer(FireRateTimer_TimerHandle, this, &APlayerCharacter::FireRateTimer_Expired, 2.0, false);
-
-			if (isHit)
-			{
-				if (OutHit.bBlockingHit)
-				{
-					if (GEngine)
-					{
-						GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("You Are Hitting: %s"), *OutHit.GetActor()->GetName()));
-					}
-				}
-			}
-		}
-
-		// try and play the sound if specified
-		if (FireSound != NULL)
-		{
-			UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
-		}
-
-		// try and play a firing animation if specified
-		if (FireAnimation != NULL)
-		{
-			// Get the animation object for the arms mesh
-			UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
-			if (AnimInstance != NULL)
-			{
-				AnimInstance->Montage_Play(FireAnimation, 1.f);
-			}
-		}
-	}
+void APlayerCharacter::StopFiring()
+{
+	isFiring = false;
 }
 
 void APlayerCharacter::FireRateTimer_Expired()
@@ -157,6 +116,58 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (isFiring)
+	{
+		if (canFire)
+		{
+			UWorld* const World = GetWorld();
+			if (World != NULL)
+			{
+
+				FHitResult OutHit;
+				FVector Start = FP_Gun->GetComponentLocation();
+
+				FVector ForwardVector = FirstPersonCameraComponent->GetForwardVector();
+				FVector End = ((ForwardVector * 1000.0f) + Start);
+				FCollisionQueryParams CollisionParams;
+
+				DrawDebugLine(World, Start, End, FColor::Green, true);
+
+				bool isHit = World->LineTraceSingleByChannel(OutHit, Start, End, ECC_Visibility, CollisionParams);
+
+				canFire = false;
+				GetWorldTimerManager().SetTimer(FireRateTimer_TimerHandle, this, &APlayerCharacter::FireRateTimer_Expired, 0.5f, false);
+
+				if (isHit)
+				{
+					if (OutHit.bBlockingHit)
+					{
+						if (GEngine)
+						{
+							GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("You Are Hitting: %s"), *OutHit.GetActor()->GetName()));
+						}
+					}
+				}
+			}
+
+			// try and play the sound if specified
+			if (FireSound != NULL)
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+			}
+
+			// try and play a firing animation if specified
+			if (FireAnimation != NULL)
+			{
+				// Get the animation object for the arms mesh
+				UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
+				if (AnimInstance != NULL)
+				{
+					AnimInstance->Montage_Play(FireAnimation, 1.f);
+				}
+			}
+		}
+	}
 }
 
 // Called to bind functionality to input
@@ -172,7 +183,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
 	// Bind fire event
-	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APlayerCharacter::OnFire);
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APlayerCharacter::StartFiring);
+	PlayerInputComponent->BindAction("Fire", IE_Released, this, &APlayerCharacter::StopFiring);
 
 	// Bind movement events
 	PlayerInputComponent->BindAxis("MoveForward", this, &APlayerCharacter::MoveForward);
