@@ -58,6 +58,7 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	canFire = true;
 
 	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
 	FP_Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));	
@@ -65,53 +66,60 @@ void APlayerCharacter::BeginPlay()
 
 void APlayerCharacter::OnFire()
 {
-	UWorld* const World = GetWorld();
-	if (World != NULL)
+	if (canFire)
 	{
-		FHitResult OutHit;
-		FVector Start = FP_Gun->GetComponentLocation();
-
-		FVector ForwardVector = FirstPersonCameraComponent->GetForwardVector();
-		FVector End = ((ForwardVector * 1000.0f) + Start);
-		FCollisionQueryParams CollisionParams;
-
-		DrawDebugLine(World, Start, End, FColor::Green, true);
-
-		bool isHit = World->LineTraceSingleByChannel(OutHit, Start, End, ECC_Visibility, CollisionParams);
-
-		if (isHit)
+		UWorld* const World = GetWorld();
+		if (World != NULL)
 		{
-			if (OutHit.bBlockingHit)
+
+			FHitResult OutHit;
+			FVector Start = FP_Gun->GetComponentLocation();
+
+			FVector ForwardVector = FirstPersonCameraComponent->GetForwardVector();
+			FVector End = ((ForwardVector * 1000.0f) + Start);
+			FCollisionQueryParams CollisionParams;
+
+			DrawDebugLine(World, Start, End, FColor::Green, true);
+
+			bool isHit = World->LineTraceSingleByChannel(OutHit, Start, End, ECC_Visibility, CollisionParams);
+
+			canFire = false;
+			GetWorldTimerManager().SetTimer(FireRateTimer_TimerHandle, this, &APlayerCharacter::FireRateTimer_Expired, 2.0, false);
+
+			if (isHit)
 			{
-				if (GEngine)
+				if (OutHit.bBlockingHit)
 				{
-					GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("You Are Hitting: %s"), *OutHit.GetActor()->GetName()));
+					if (GEngine)
+					{
+						GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("You Are Hitting: %s"), *OutHit.GetActor()->GetName()));
+					}
 				}
 			}
 		}
-	}
 
-	// try and play the sound if specified
-	if (FireSound != NULL)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
-	}
-
-	// try and play a firing animation if specified
-	if (FireAnimation != NULL)
-	{
-		// Get the animation object for the arms mesh
-		UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
-		if (AnimInstance != NULL)
+		// try and play the sound if specified
+		if (FireSound != NULL)
 		{
-			AnimInstance->Montage_Play(FireAnimation, 1.f);
+			UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+		}
+
+		// try and play a firing animation if specified
+		if (FireAnimation != NULL)
+		{
+			// Get the animation object for the arms mesh
+			UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
+			if (AnimInstance != NULL)
+			{
+				AnimInstance->Montage_Play(FireAnimation, 1.f);
+			}
 		}
 	}
 }
 
-void APlayerCharacter::FireGun(FVector muzzleLocation)
+void APlayerCharacter::FireRateTimer_Expired()
 {
-
+	canFire = true;
 }
 
 void APlayerCharacter::MoveForward(float val)

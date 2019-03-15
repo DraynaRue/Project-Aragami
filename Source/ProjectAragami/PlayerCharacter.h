@@ -71,11 +71,14 @@ protected:
 	float startTime;
 	float currentTime;
 
+	bool canFire;
+	FTimerHandle FireRateTimer_TimerHandle;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	void OnFire();
-	void FireGun(FVector muzzleLocation);
+	void FireRateTimer_Expired();
 
 	// handles moving forwards / backwards
 	void MoveForward(float val);
