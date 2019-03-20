@@ -80,13 +80,34 @@ void APlayerCharacter::StopFiring()
 	isFiring = false;
 }
 
+void APlayerCharacter::Reload()
+{
+	if (isFiring == false)
+	{
+		canFire = false;
+
+		UWorld* const World = GetWorld();
+		if (World != NULL)
+		{
+			float rld = BaseFireRate * FireRateMod;
+
+			GetWorldTimerManager().SetTimer(FireRateTimer_TimerHandle, this, &APlayerCharacter::ReloadTimer_Expired, rld, false);
+		}
+	}
+}
+
 void APlayerCharacter::FireRateTimer_Expired()
 {
-	if (RoundsInMag == 0)
-	{
-		RoundsInMag = BaseMagazine * MagazineMod;
-		TotalAmmo -= RoundsInMag;
-	}
+	canFire = true;
+}
+
+void APlayerCharacter::ReloadTimer_Expired()
+{
+	int mag = BaseMagazine * MagazineMod;
+	mag -= RoundsInMag;
+	TotalAmmo -= mag;
+	RoundsInMag = BaseMagazine * MagazineMod;
+
 	canFire = true;
 }
 
@@ -150,11 +171,12 @@ void APlayerCharacter::Tick(float DeltaTime)
 				RoundsInMag--;
 
 				canFire = false;
-				if (RoundsInMag == 0)
+				/*if (RoundsInMag == 0)
 				{
-					GetWorldTimerManager().SetTimer(FireRateTimer_TimerHandle, this, &APlayerCharacter::FireRateTimer_Expired, rld, false);
+					GetWorldTimerManager().SetTimer(FireRateTimer_TimerHandle, this, &APlayerCharacter::ReloadTimer_Expired, rld, false);
 				}
-				else
+				else*/
+				if (RoundsInMag > 0)
 				{
 					GetWorldTimerManager().SetTimer(FireRateTimer_TimerHandle, this, &APlayerCharacter::FireRateTimer_Expired, frrt, false);
 				}
@@ -203,9 +225,12 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
-	// Bind fire event
+	// Bind fire events
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APlayerCharacter::StartFiring);
 	PlayerInputComponent->BindAction("Fire", IE_Released, this, &APlayerCharacter::StopFiring);
+
+	// Bind reload event
+	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &APlayerCharacter::Reload);
 
 	// Bind movement events
 	PlayerInputComponent->BindAxis("MoveForward", this, &APlayerCharacter::MoveForward);
