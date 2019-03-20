@@ -73,6 +73,10 @@ void APlayerCharacter::StartFiring()
 {
 	isFiring = true;
 
+	if (RoundsInMag <= 0 && isReloading == false)
+	{
+		Reload();
+	}
 }
 
 void APlayerCharacter::StopFiring()
@@ -88,8 +92,18 @@ void APlayerCharacter::Reload()
 	UWorld* const World = GetWorld();
 	if (World != NULL)
 	{
-		float rld = BaseReload * ReloadMod;
-		GetWorldTimerManager().SetTimer(ReloadTimer_TimerHandle, this, &APlayerCharacter::ReloadTimer_Expired, rld, false);
+		int mag = BaseMagazine * MagazineMod;
+
+		if (RoundsInMag < mag)
+		{
+			float rld = BaseReload * ReloadMod;
+			GetWorldTimerManager().SetTimer(ReloadTimer_TimerHandle, this, &APlayerCharacter::ReloadTimer_Expired, rld, false);
+		}
+		else if (RoundsInMag == mag)
+		{
+			isReloading = false;
+			canFire = true;
+		}
 	}
 }
 
@@ -101,6 +115,7 @@ void APlayerCharacter::FireRateTimer_Expired()
 void APlayerCharacter::ReloadTimer_Expired()
 {
 	int mag = BaseMagazine * MagazineMod;
+
 	if (TotalAmmo > mag)
 	{
 		mag -= RoundsInMag;
