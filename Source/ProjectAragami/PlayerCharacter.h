@@ -101,8 +101,6 @@ protected:
 
 	bool isFiring;
 	bool canFire;
-	FTimerHandle FireRateTimer_TimerHandle;
-//	FTimerHandle ReloadTimer_TimerHandle;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -134,6 +132,8 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	FTimerHandle FireRateTimer_TimerHandle;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

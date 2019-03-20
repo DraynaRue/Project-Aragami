@@ -89,7 +89,7 @@ void APlayerCharacter::Reload()
 		UWorld* const World = GetWorld();
 		if (World != NULL)
 		{
-			float rld = BaseFireRate * FireRateMod;
+			float rld = BaseReload * ReloadMod;
 
 			GetWorldTimerManager().SetTimer(FireRateTimer_TimerHandle, this, &APlayerCharacter::ReloadTimer_Expired, rld, false);
 		}
