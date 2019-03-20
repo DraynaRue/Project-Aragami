@@ -84,13 +84,13 @@ void APlayerCharacter::Reload()
 {
 	if (isFiring == false)
 	{
+		isReloading = true;
 		canFire = false;
 
 		UWorld* const World = GetWorld();
 		if (World != NULL)
 		{
 			float rld = BaseReload * ReloadMod;
-
 			GetWorldTimerManager().SetTimer(ReloadTimer_TimerHandle, this, &APlayerCharacter::ReloadTimer_Expired, rld, false);
 		}
 	}
@@ -108,6 +108,7 @@ void APlayerCharacter::ReloadTimer_Expired()
 	TotalAmmo -= mag;
 	RoundsInMag = BaseMagazine * MagazineMod;
 
+	isReloading = false;
 	canFire = true;
 }
 
@@ -155,7 +156,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 	{
 		ReloadTime = GetWorldTimerManager().GetTimerElapsed(ReloadTimer_TimerHandle);
 
-		if (isFiring)
+		if (isFiring == true && isReloading == false)
 		{
 			if (canFire)
 			{
@@ -163,7 +164,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 				FVector Start = FP_Gun->GetComponentLocation();
 
 				FVector ForwardVector = FirstPersonCameraComponent->GetForwardVector();
-				FVector End = ((ForwardVector * 1000.0f) + Start);
+				FVector End = ((ForwardVector * 10000.0f) + Start);
 				FCollisionQueryParams CollisionParams;
 
 				DrawDebugLine(World, Start, End, FColor::Green, true);

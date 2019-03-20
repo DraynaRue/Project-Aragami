@@ -103,6 +103,7 @@ protected:
 	float currentTime;
 
 	bool isFiring;
+	bool isReloading;
 	bool canFire;
 
 	// Called when the game starts or when spawned
