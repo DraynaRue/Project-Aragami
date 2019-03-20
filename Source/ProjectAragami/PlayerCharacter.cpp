@@ -84,7 +84,7 @@ void APlayerCharacter::FireRateTimer_Expired()
 {
 	if (RoundsInMag == 0)
 	{
-		RoundsInMag = BaseMagazine + MagazineMod;
+		RoundsInMag = BaseMagazine * MagazineMod;
 		TotalAmmo -= RoundsInMag;
 	}
 	canFire = true;
@@ -125,10 +125,9 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	float dmg = BaseDamage + DamageMod;
-	float rld = BaseReload + ReloadMod;
-	float frrt = BaseFireRate + FireRateMod;
-	float mgzn = BaseMagazine + MagazineMod;
+	float dmg = BaseDamage * DamageMod;
+	float rld = BaseReload * ReloadMod;
+	float frrt = BaseFireRate * FireRateMod;
 
 	if (isFiring)
 	{

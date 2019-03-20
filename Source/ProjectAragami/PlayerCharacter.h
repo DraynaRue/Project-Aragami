@@ -53,7 +53,7 @@ public:
 
 	// Number of shots before reload w/o modifers
 	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
-	float BaseMagazine;
+	int BaseMagazine;
 
 	// Modifier added to BaseDamage
 	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
@@ -73,15 +73,15 @@ public:
 
 	// Total ammo held at game start
 	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
-	float StartAmmo;
+	int StartAmmo;
 
 	// Total ammo held at current moment of play
 	UPROPERTY(Category = Gameplay, VisibleAnywhere, BlueprintReadWrite)
-	float TotalAmmo;
+	int TotalAmmo;
 
 	// Current number of rounds in the magazine
 	UPROPERTY(Category = Gameplay, VisibleAnywhere, BlueprintReadWrite)
-	float RoundsInMag;
+	int RoundsInMag;
 
 	/** Gun muzzle's offset from the characters location */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
