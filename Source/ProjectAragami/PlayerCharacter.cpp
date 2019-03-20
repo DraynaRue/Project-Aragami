@@ -82,17 +82,14 @@ void APlayerCharacter::StopFiring()
 
 void APlayerCharacter::Reload()
 {
-	if (isFiring == false)
-	{
-		isReloading = true;
-		canFire = false;
+	isReloading = true;
+	canFire = false;
 
-		UWorld* const World = GetWorld();
-		if (World != NULL)
-		{
-			float rld = BaseReload * ReloadMod;
-			GetWorldTimerManager().SetTimer(ReloadTimer_TimerHandle, this, &APlayerCharacter::ReloadTimer_Expired, rld, false);
-		}
+	UWorld* const World = GetWorld();
+	if (World != NULL)
+	{
+		float rld = BaseReload * ReloadMod;
+		GetWorldTimerManager().SetTimer(ReloadTimer_TimerHandle, this, &APlayerCharacter::ReloadTimer_Expired, rld, false);
 	}
 }
 
@@ -104,9 +101,17 @@ void APlayerCharacter::FireRateTimer_Expired()
 void APlayerCharacter::ReloadTimer_Expired()
 {
 	int mag = BaseMagazine * MagazineMod;
-	mag -= RoundsInMag;
-	TotalAmmo -= mag;
-	RoundsInMag = BaseMagazine * MagazineMod;
+	if (TotalAmmo > mag)
+	{
+		mag -= RoundsInMag;
+		TotalAmmo -= mag;
+		RoundsInMag = BaseMagazine * MagazineMod;
+	}
+	else if (TotalAmmo < mag)
+	{
+		RoundsInMag = TotalAmmo;
+		TotalAmmo = 0;
+	}
 
 	isReloading = false;
 	canFire = true;
@@ -158,7 +163,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 
 		if (isFiring == true && isReloading == false)
 		{
-			if (canFire)
+			if (canFire && RoundsInMag > 0)
 			{
 				FHitResult OutHit;
 				FVector Start = FP_Gun->GetComponentLocation();
@@ -174,15 +179,14 @@ void APlayerCharacter::Tick(float DeltaTime)
 				RoundsInMag--;
 
 				canFire = false;
+
 				/*if (RoundsInMag == 0)
 				{
 					GetWorldTimerManager().SetTimer(FireRateTimer_TimerHandle, this, &APlayerCharacter::ReloadTimer_Expired, rld, false);
 				}
 				else*/
-				if (RoundsInMag > 0)
-				{
-					GetWorldTimerManager().SetTimer(FireRateTimer_TimerHandle, this, &APlayerCharacter::FireRateTimer_Expired, frrt, false);
-				}
+
+				GetWorldTimerManager().SetTimer(FireRateTimer_TimerHandle, this, &APlayerCharacter::FireRateTimer_Expired, frrt, false);
 
 				if (isHit)
 				{
