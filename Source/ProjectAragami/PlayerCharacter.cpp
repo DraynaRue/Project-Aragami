@@ -116,15 +116,15 @@ void APlayerCharacter::ReloadTimer_Expired()
 {
 	int mag = BaseMagazine * MagazineMod;
 
-	if (TotalAmmo > mag)
+	mag -= RoundsInMag;
+	TotalAmmo -= mag;
+	if (TotalAmmo >= 0)
 	{
-		mag -= RoundsInMag;
-		TotalAmmo -= mag;
 		RoundsInMag = BaseMagazine * MagazineMod;
 	}
-	else if (TotalAmmo < mag)
+	else if (TotalAmmo < 0)
 	{
-		RoundsInMag = TotalAmmo;
+		RoundsInMag += TotalAmmo;
 		TotalAmmo = 0;
 	}
 
