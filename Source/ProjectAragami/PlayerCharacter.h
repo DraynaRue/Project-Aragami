@@ -55,6 +55,34 @@ public:
 	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
 	float BaseMagazine;
 
+	// Modifier added to BaseDamage
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	float DamageMod;
+
+	// Modifier added to BaseReload
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	float ReloadMod;
+
+	// Modifier added to BaseFireRate
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	float FireRateMod;
+
+	// Modifier added to BaseMagazine
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	float MagazineMod;
+
+	// Total ammo held at game start
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	float StartAmmo;
+
+	// Total ammo held at current moment of play
+	UPROPERTY(Category = Gameplay, VisibleAnywhere, BlueprintReadWrite)
+	float TotalAmmo;
+
+	// Current number of rounds in the magazine
+	UPROPERTY(Category = Gameplay, VisibleAnywhere, BlueprintReadWrite)
+	float RoundsInMag;
+
 	/** Gun muzzle's offset from the characters location */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	FVector GunOffset;

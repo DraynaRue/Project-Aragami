@@ -58,6 +58,10 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	TotalAmmo = StartAmmo;
+	RoundsInMag = BaseMagazine + MagazineMod;
+	TotalAmmo -= RoundsInMag;
+
 	isFiring = false;
 	canFire = true;
 
@@ -78,6 +82,11 @@ void APlayerCharacter::StopFiring()
 
 void APlayerCharacter::FireRateTimer_Expired()
 {
+	if (RoundsInMag == 0)
+	{
+		RoundsInMag = BaseMagazine + MagazineMod;
+		TotalAmmo -= RoundsInMag;
+	}
 	canFire = true;
 }
 
@@ -116,6 +125,11 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	float dmg = BaseDamage + DamageMod;
+	float rld = BaseReload + ReloadMod;
+	float frrt = BaseFireRate + FireRateMod;
+	float mgzn = BaseMagazine + MagazineMod;
+
 	if (isFiring)
 	{
 		if (canFire)
@@ -123,7 +137,6 @@ void APlayerCharacter::Tick(float DeltaTime)
 			UWorld* const World = GetWorld();
 			if (World != NULL)
 			{
-
 				FHitResult OutHit;
 				FVector Start = FP_Gun->GetComponentLocation();
 
@@ -135,8 +148,17 @@ void APlayerCharacter::Tick(float DeltaTime)
 
 				bool isHit = World->LineTraceSingleByChannel(OutHit, Start, End, ECC_Visibility, CollisionParams);
 
+				RoundsInMag--;
+
 				canFire = false;
-				GetWorldTimerManager().SetTimer(FireRateTimer_TimerHandle, this, &APlayerCharacter::FireRateTimer_Expired, 0.5f, false);
+				if (RoundsInMag == 0)
+				{
+					GetWorldTimerManager().SetTimer(FireRateTimer_TimerHandle, this, &APlayerCharacter::FireRateTimer_Expired, rld, false);
+				}
+				else
+				{
+					GetWorldTimerManager().SetTimer(FireRateTimer_TimerHandle, this, &APlayerCharacter::FireRateTimer_Expired, frrt, false);
+				}
 
 				if (isHit)
 				{
