@@ -94,12 +94,12 @@ void APlayerCharacter::Reload()
 	{
 		int mag = BaseMagazine * MagazineMod;
 
-		if (RoundsInMag < mag)
+		if (RoundsInMag < mag && TotalAmmo > 0)
 		{
 			float rld = BaseReload * ReloadMod;
 			GetWorldTimerManager().SetTimer(ReloadTimer_TimerHandle, this, &APlayerCharacter::ReloadTimer_Expired, rld, false);
 		}
-		else if (RoundsInMag == mag)
+		else if (RoundsInMag == mag || TotalAmmo <= 0)
 		{
 			isReloading = false;
 			canFire = true;
