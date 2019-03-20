@@ -91,7 +91,7 @@ void APlayerCharacter::Reload()
 		{
 			float rld = BaseReload * ReloadMod;
 
-			GetWorldTimerManager().SetTimer(FireRateTimer_TimerHandle, this, &APlayerCharacter::ReloadTimer_Expired, rld, false);
+			GetWorldTimerManager().SetTimer(ReloadTimer_TimerHandle, this, &APlayerCharacter::ReloadTimer_Expired, rld, false);
 		}
 	}
 }
@@ -150,12 +150,14 @@ void APlayerCharacter::Tick(float DeltaTime)
 	float rld = BaseReload * ReloadMod;
 	float frrt = BaseFireRate * FireRateMod;
 
-	if (isFiring)
+	UWorld* const World = GetWorld();
+	if (World != NULL)
 	{
-		if (canFire)
+		ReloadTime = GetWorldTimerManager().GetTimerElapsed(ReloadTimer_TimerHandle);
+
+		if (isFiring)
 		{
-			UWorld* const World = GetWorld();
-			if (World != NULL)
+			if (canFire)
 			{
 				FHitResult OutHit;
 				FVector Start = FP_Gun->GetComponentLocation();
@@ -191,22 +193,23 @@ void APlayerCharacter::Tick(float DeltaTime)
 						}
 					}
 				}
-			}
 
-			// try and play the sound if specified
-			if (FireSound != NULL)
-			{
-				UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
-			}
 
-			// try and play a firing animation if specified
-			if (FireAnimation != NULL)
-			{
-				// Get the animation object for the arms mesh
-				UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
-				if (AnimInstance != NULL)
+				// try and play the sound if specified
+				if (FireSound != NULL)
 				{
-					AnimInstance->Montage_Play(FireAnimation, 1.f);
+					UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+				}
+
+				// try and play a firing animation if specified
+				if (FireAnimation != NULL)
+				{
+					// Get the animation object for the arms mesh
+					UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
+					if (AnimInstance != NULL)
+					{
+						AnimInstance->Montage_Play(FireAnimation, 1.f);
+					}
 				}
 			}
 		}
