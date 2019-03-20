@@ -59,7 +59,7 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	TotalAmmo = StartAmmo;
-	RoundsInMag = BaseMagazine + MagazineMod;
+	RoundsInMag = BaseMagazine * MagazineMod;
 	TotalAmmo -= RoundsInMag;
 
 	isFiring = false;
