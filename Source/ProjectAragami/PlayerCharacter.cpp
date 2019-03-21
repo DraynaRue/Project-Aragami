@@ -207,6 +207,17 @@ void APlayerCharacter::Tick(float DeltaTime)
 				{
 					if (OutHit.bBlockingHit)
 					{
+						if (OutHit.GetActor())
+						{
+							if (OutHit.GetActor()->IsRootComponentMovable()) {
+
+								UStaticMeshComponent* MeshRootComp = Cast<UStaticMeshComponent>(OutHit.GetActor()->GetRootComponent());
+
+								//MeshRootComp->AddForce(ForwardVector * 100000 * MeshRootComp->GetMass());
+								MeshRootComp->AddImpulseAtLocation(ForwardVector * 1000.0f * MeshRootComp->GetMass(), OutHit.ImpactPoint);
+							}
+
+						}
 						if (GEngine)
 						{
 							GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("You Are Hitting: %s"), *OutHit.GetActor()->GetName()));
