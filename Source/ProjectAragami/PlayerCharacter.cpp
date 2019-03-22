@@ -7,6 +7,7 @@
 #include "Components/InputComponent.h"
 #include "GameFramework/InputSettings.h"
 #include "Kismet/GameplayStatics.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -57,43 +58,81 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	TotalAmmo = StartAmmo;
+	RoundsInMag = BaseMagazine * MagazineMod;
+	TotalAmmo -= RoundsInMag;
+
+	isFiring = false;
+	canFire = true;
 
 	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
 	FP_Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));	
 }
 
-void APlayerCharacter::OnFire()
+void APlayerCharacter::StartFiring()
 {
-	if (Gun != NULL)
+	isFiring = true;
+
+	if (RoundsInMag <= 0 && isReloading == false)
 	{
+		Reload();
+	}
+}
+
+void APlayerCharacter::StopFiring()
+{
+	isFiring = false;
+}
+
+void APlayerCharacter::Reload()
+{
+	if (isReloading == false)
+	{
+		isReloading = true;
+		canFire = false;
+
 		UWorld* const World = GetWorld();
 		if (World != NULL)
 		{
+			int mag = BaseMagazine * MagazineMod;
 
-		}
-	}
-
-	// try and play the sound if specified
-	if (FireSound != NULL)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
-	}
-
-	// try and play a firing animation if specified
-	if (FireAnimation != NULL)
-	{
-		// Get the animation object for the arms mesh
-		UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
-		if (AnimInstance != NULL)
-		{
-			AnimInstance->Montage_Play(FireAnimation, 1.f);
+			if (RoundsInMag < mag && TotalAmmo > 0)
+			{
+				float rld = BaseReload * ReloadMod;
+				GetWorldTimerManager().SetTimer(ReloadTimer_TimerHandle, this, &APlayerCharacter::ReloadTimer_Expired, rld, false);
+			}
+			else if (RoundsInMag == mag || TotalAmmo <= 0)
+			{
+				isReloading = false;
+				canFire = true;
+			}
 		}
 	}
 }
 
-void APlayerCharacter::FireGun(FVector muzzleLocation)
+void APlayerCharacter::FireRateTimer_Expired()
 {
+	canFire = true;
+}
 
+void APlayerCharacter::ReloadTimer_Expired()
+{
+	int mag = BaseMagazine * MagazineMod;
+
+	mag -= RoundsInMag;
+	if (TotalAmmo - mag >= 0)
+	{
+		TotalAmmo -= mag;
+		RoundsInMag = BaseMagazine * MagazineMod;
+	}
+	else if (TotalAmmo - mag < 0)
+	{
+		RoundsInMag += TotalAmmo;
+		TotalAmmo = 0;
+	}
+
+	isReloading = false;
+	canFire = true;
 }
 
 void APlayerCharacter::MoveForward(float val)
@@ -131,6 +170,84 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	float dmg = BaseDamage * DamageMod;
+	float rld = BaseReload * ReloadMod;
+	float frrt = BaseFireRate * FireRateMod;
+
+	UWorld* const World = GetWorld();
+	if (World != NULL)
+	{
+		ReloadTime = GetWorldTimerManager().GetTimerElapsed(ReloadTimer_TimerHandle);
+
+		if (isFiring == true && isReloading == false)
+		{
+			if (canFire && RoundsInMag > 0)
+			{
+				FHitResult OutHit;
+				FVector Start = FP_Gun->GetComponentLocation();
+
+				FVector ForwardVector = FirstPersonCameraComponent->GetForwardVector();
+				FVector End = ((ForwardVector * 10000.0f) + Start);
+				FCollisionQueryParams CollisionParams;
+
+				DrawDebugLine(World, Start, End, FColor::Green, true);
+
+				bool isHit = World->LineTraceSingleByChannel(OutHit, Start, End, ECC_Visibility, CollisionParams);
+
+				RoundsInMag--;
+
+				canFire = false;
+
+				/*if (RoundsInMag == 0)
+				{
+					GetWorldTimerManager().SetTimer(FireRateTimer_TimerHandle, this, &APlayerCharacter::ReloadTimer_Expired, rld, false);
+				}
+				else*/
+
+				GetWorldTimerManager().SetTimer(FireRateTimer_TimerHandle, this, &APlayerCharacter::FireRateTimer_Expired, frrt, false);
+
+				if (isHit)
+				{
+					if (OutHit.bBlockingHit)
+					{
+						if (OutHit.GetActor())
+						{
+							if (OutHit.GetActor()->IsRootComponentMovable()) {
+
+								UStaticMeshComponent* MeshRootComp = Cast<UStaticMeshComponent>(OutHit.GetActor()->GetRootComponent());
+
+								//MeshRootComp->AddForce(ForwardVector * 100000 * MeshRootComp->GetMass());
+								MeshRootComp->AddImpulseAtLocation(ForwardVector * 1000.0f * MeshRootComp->GetMass(), OutHit.ImpactPoint);
+							}
+
+						}
+						if (GEngine)
+						{
+							GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("You Are Hitting: %s"), *OutHit.GetActor()->GetName()));
+						}
+					}
+				}
+
+
+				// try and play the sound if specified
+				if (FireSound != NULL)
+				{
+					UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+				}
+
+				// try and play a firing animation if specified
+				if (FireAnimation != NULL)
+				{
+					// Get the animation object for the arms mesh
+					UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
+					if (AnimInstance != NULL)
+					{
+						AnimInstance->Montage_Play(FireAnimation, 1.f);
+					}
+				}
+			}
+		}
+	}
 }
 
 // Called to bind functionality to input
@@ -145,8 +262,12 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
-	// Bind fire event
-	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APlayerCharacter::OnFire);
+	// Bind fire events
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APlayerCharacter::StartFiring);
+	PlayerInputComponent->BindAction("Fire", IE_Released, this, &APlayerCharacter::StopFiring);
+
+	// Bind reload event
+	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &APlayerCharacter::Reload);
 
 	// Bind movement events
 	PlayerInputComponent->BindAxis("MoveForward", this, &APlayerCharacter::MoveForward);

@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "NormalGun.h"
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
@@ -32,9 +31,6 @@ public:
 	// Sets default values for this character's properties
 	APlayerCharacter();
 
-	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
-	class TSubclassOf<ANormalGun> Gun;
-
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseTurnRate;
@@ -42,6 +38,53 @@ public:
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseLookUpRate;
+
+	// Damage dealt to enemies per hit w/o modifiers
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	float BaseDamage;
+
+	// Time between magazines w/o modifiers
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	float BaseReload;
+
+	// Time between shots w/o modifiers
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	float BaseFireRate;
+
+	// Number of shots before reload w/o modifers
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	int BaseMagazine;
+
+	// Modifier added to BaseDamage
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	float DamageMod;
+
+	// Modifier added to BaseReload
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	float ReloadMod;
+
+	// Modifier added to BaseFireRate
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	float FireRateMod;
+
+	UPROPERTY(Category = Gameplay, VisibleAnywhere, BlueprintReadWrite)
+	float ReloadTime;
+
+	// Modifier added to BaseMagazine
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	float MagazineMod;
+
+	// Total ammo held at game start
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	int StartAmmo;
+
+	// Total ammo held at current moment of play
+	UPROPERTY(Category = Gameplay, VisibleAnywhere, BlueprintReadWrite)
+	int TotalAmmo;
+
+	// Current number of rounds in the magazine
+	UPROPERTY(Category = Gameplay, VisibleAnywhere, BlueprintReadWrite)
+	int RoundsInMag;
 
 	/** Gun muzzle's offset from the characters location */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
@@ -59,11 +102,21 @@ protected:
 	float startTime;
 	float currentTime;
 
+	bool isFiring;
+	bool isReloading;
+	bool canFire;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	void OnFire();
-	void FireGun(FVector muzzleLocation);
+	FTimerHandle FireRateTimer_TimerHandle;
+	FTimerHandle ReloadTimer_TimerHandle;
+
+	void StartFiring();
+	void StopFiring();
+	void Reload();
+	void FireRateTimer_Expired();
+	void ReloadTimer_Expired();
 
 	// handles moving forwards / backwards
 	void MoveForward(float val);
