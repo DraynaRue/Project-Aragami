@@ -86,23 +86,26 @@ void APlayerCharacter::StopFiring()
 
 void APlayerCharacter::Reload()
 {
-	isReloading = true;
-	canFire = false;
-
-	UWorld* const World = GetWorld();
-	if (World != NULL)
+	if (isReloading == false)
 	{
-		int mag = BaseMagazine * MagazineMod;
+		isReloading = true;
+		canFire = false;
 
-		if (RoundsInMag < mag && TotalAmmo > 0)
+		UWorld* const World = GetWorld();
+		if (World != NULL)
 		{
-			float rld = BaseReload * ReloadMod;
-			GetWorldTimerManager().SetTimer(ReloadTimer_TimerHandle, this, &APlayerCharacter::ReloadTimer_Expired, rld, false);
-		}
-		else if (RoundsInMag == mag || TotalAmmo <= 0)
-		{
-			isReloading = false;
-			canFire = true;
+			int mag = BaseMagazine * MagazineMod;
+
+			if (RoundsInMag < mag && TotalAmmo > 0)
+			{
+				float rld = BaseReload * ReloadMod;
+				GetWorldTimerManager().SetTimer(ReloadTimer_TimerHandle, this, &APlayerCharacter::ReloadTimer_Expired, rld, false);
+			}
+			else if (RoundsInMag == mag || TotalAmmo <= 0)
+			{
+				isReloading = false;
+				canFire = true;
+			}
 		}
 	}
 }
