@@ -39,6 +39,12 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, Category = Enemy)
 	UAISenseConfig_Sight* sightConfig;
 
+	UPROPERTY(EditAnywhere, Category = Enemy)
+	int maxHealth;
+
+	UPROPERTY(EditAnywhere, Category = Enemy)
+	int currentHealth;
+
 	UFUNCTION()
 	void OnSensed(const TArray<AActor*>& updatedActors);
 

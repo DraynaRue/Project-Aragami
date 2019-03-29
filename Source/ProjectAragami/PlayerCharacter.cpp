@@ -217,9 +217,11 @@ void APlayerCharacter::Tick(float DeltaTime)
 							if (OutHit.GetActor()->IsRootComponentMovable()) {
 
 								UStaticMeshComponent* MeshRootComp = Cast<UStaticMeshComponent>(OutHit.GetActor()->GetRootComponent());
-
-								//MeshRootComp->AddForce(ForwardVector * 100000 * MeshRootComp->GetMass());
-								MeshRootComp->AddImpulseAtLocation(ForwardVector * 1000.0f * MeshRootComp->GetMass(), OutHit.ImpactPoint);
+								if (MeshRootComp != nullptr)
+								{
+									//MeshRootComp->AddForce(ForwardVector * 100000 * MeshRootComp->GetMass());
+									MeshRootComp->AddImpulseAtLocation(ForwardVector * 1000.0f * MeshRootComp->GetMass(), OutHit.ImpactPoint);
+								}
 							}
 
 						}

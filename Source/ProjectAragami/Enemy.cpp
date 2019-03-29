@@ -25,6 +25,7 @@ AEnemy::AEnemy()
 	sightConfig->DetectionByAffiliation.bDetectEnemies = true;
 	sightConfig->DetectionByAffiliation.bDetectFriendlies = true;
 	sightConfig->DetectionByAffiliation.bDetectNeutrals = true;
+	sightConfig->SetMaxAge(0.1f);
 
 	aiPercComp->ConfigureSense(*sightConfig);
 	aiPercComp->SetDominantSense(sightConfig->GetSenseImplementation());
@@ -32,6 +33,8 @@ AEnemy::AEnemy()
 
 	currVel = FVector::ZeroVector;
 	speed = 30.0f;
+	maxHealth = 30.0f;
+	currentHealth = maxHealth;
 	distSq = BIG_NUMBER;
 	backToBase = false;
 
@@ -81,7 +84,7 @@ void AEnemy::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherAc
 		APlayerCharacter* p = Cast<APlayerCharacter>(OtherActor);
 		if (p)
 		{
-			//			p->health -= 10;
+			//p->health -= 10;
 		}
 	}
 }
