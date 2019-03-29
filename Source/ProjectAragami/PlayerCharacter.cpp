@@ -226,7 +226,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 								AEnemy* Enemy = Cast<AEnemy>(OutHit.GetActor());
 								if (Enemy != nullptr)
 								{
-									Enemy->currentHealth--;
+									Enemy->currentHealth -= dmg;
 									if (Enemy->currentHealth <= 0)
 									{
 										Enemy->kill();
