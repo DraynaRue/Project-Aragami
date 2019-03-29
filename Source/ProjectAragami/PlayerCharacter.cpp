@@ -8,6 +8,7 @@
 #include "GameFramework/InputSettings.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
+#include "Enemy.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -222,12 +223,24 @@ void APlayerCharacter::Tick(float DeltaTime)
 									//MeshRootComp->AddForce(ForwardVector * 100000 * MeshRootComp->GetMass());
 									MeshRootComp->AddImpulseAtLocation(ForwardVector * 1000.0f * MeshRootComp->GetMass(), OutHit.ImpactPoint);
 								}
+								AEnemy* Enemy = Cast<AEnemy>(OutHit.GetActor());
+								if (Enemy != nullptr)
+								{
+									Enemy->currentHealth--;
+									if (Enemy->currentHealth <= 0)
+									{
+										Enemy->kill();
+									}
+								}
 							}
 
 						}
 						if (GEngine)
 						{
-							GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("You Are Hitting: %s"), *OutHit.GetActor()->GetName()));
+							if (OutHit.GetActor() != nullptr)
+							{
+								GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("You Are Hitting: %s"), *OutHit.GetActor()->GetName()));
+							}
 						}
 					}
 				}

@@ -50,6 +50,8 @@ public:
 
 	void setNewRotation(FVector targPos, FVector currPos);
 
+	void kill();
+
 	UPROPERTY(VisibleAnywhere, Category = Movement)
 	FRotator enemyRot;
 

@@ -127,3 +127,8 @@ void AEnemy::setNewRotation(FVector targPos, FVector currPos)
 	SetActorRotation(enemyRot);
 }
 
+void AEnemy::kill()
+{
+	this->Destroy();
+}
+
