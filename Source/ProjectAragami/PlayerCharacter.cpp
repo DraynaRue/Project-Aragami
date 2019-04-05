@@ -59,6 +59,8 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	BaseHealth *= HealthMod;
+	CurrentHealth = BaseHealth;
 	TotalAmmo = StartAmmo;
 	RoundsInMag = BaseMagazine * MagazineMod;
 	TotalAmmo -= RoundsInMag;
