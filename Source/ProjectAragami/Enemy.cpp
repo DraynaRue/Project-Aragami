@@ -84,7 +84,7 @@ void AEnemy::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherAc
 		APlayerCharacter* p = Cast<APlayerCharacter>(OtherActor);
 		if (p)
 		{
-			//p->health -= 10;
+			p->CurrentHealth -= 10;
 		}
 	}
 }
