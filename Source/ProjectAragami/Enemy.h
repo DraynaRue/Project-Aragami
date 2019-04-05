@@ -45,6 +45,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = Enemy)
 	int currentHealth;
 
+	UPROPERTY(EditAnywhere, Category = Enemy)
+	int XpValue;
+
 	UFUNCTION()
 	void OnSensed(const TArray<AActor*>& updatedActors);
 

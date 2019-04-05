@@ -60,6 +60,7 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	BaseHealth *= HealthMod;
+	XpToNextLevel = BaseXpToNextLevel;
 	CurrentHealth = BaseHealth;
 	TotalAmmo = StartAmmo;
 	RoundsInMag = BaseMagazine * MagazineMod;
@@ -217,7 +218,8 @@ void APlayerCharacter::Tick(float DeltaTime)
 					{
 						if (OutHit.GetActor())
 						{
-							if (OutHit.GetActor()->IsRootComponentMovable()) {
+							if (OutHit.GetActor()->IsRootComponentMovable())
+							{
 
 								UStaticMeshComponent* MeshRootComp = Cast<UStaticMeshComponent>(OutHit.GetActor()->GetRootComponent());
 								if (MeshRootComp != nullptr)
@@ -232,6 +234,15 @@ void APlayerCharacter::Tick(float DeltaTime)
 									if (Enemy->currentHealth <= 0)
 									{
 										Enemy->kill();
+										CurrentXp += Enemy->XpValue;
+										TotalXp += Enemy->XpValue;
+										if (CurrentXp >= XpToNextLevel)
+										{
+											CurrentXp = 0;
+											XpToNextLevel *= XpInflationRate;
+											XpInflationRate *= 1.5;
+											CurrentLevel++;
+										}
 									}
 								}
 							}

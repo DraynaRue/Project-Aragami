@@ -51,6 +51,24 @@ public:
 	UPROPERTY(Category = Gameplay, VisibleAnywhere, BlueprintReadWrite)
 	int CurrentHealth;
 
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	int CurrentLevel;
+
+	UPROPERTY(Category = Gameplay, VisibleAnywhere, BlueprintReadWrite)
+	int	TotalXp;
+
+	UPROPERTY(Category = Gameplay, VisibleAnywhere, BlueprintReadWrite)
+	int CurrentXp;
+
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	int BaseXpToNextLevel;
+
+	UPROPERTY(Category = Gameplay, VisibleAnywhere, BlueprintReadWrite)
+	int XpToNextLevel;
+
+	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
+	float XpInflationRate;
+
 	// Damage dealt to enemies per hit w/o modifiers
 	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
 	float BaseDamage;
