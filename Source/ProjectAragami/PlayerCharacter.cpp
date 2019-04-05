@@ -8,6 +8,7 @@
 #include "GameFramework/InputSettings.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
+#include "Enemy.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -58,12 +59,16 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	BaseHealth *= HealthMod;
+	CurrentHealth = BaseHealth;
 	TotalAmmo = StartAmmo;
 	RoundsInMag = BaseMagazine * MagazineMod;
 	TotalAmmo -= RoundsInMag;
 
 	isFiring = false;
 	canFire = true;
+
+	UAIPerceptionSystem::RegisterPerceptionStimuliSource(this, UAISense_Sight::StaticClass(), this);
 
 	//Attach gun mesh component to Skeleton, doing it here because the skeleton is not yet created in the constructor
 	FP_Gun->AttachToComponent(Mesh1P, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("GripPoint"));	
@@ -215,15 +220,29 @@ void APlayerCharacter::Tick(float DeltaTime)
 							if (OutHit.GetActor()->IsRootComponentMovable()) {
 
 								UStaticMeshComponent* MeshRootComp = Cast<UStaticMeshComponent>(OutHit.GetActor()->GetRootComponent());
-
-								//MeshRootComp->AddForce(ForwardVector * 100000 * MeshRootComp->GetMass());
-								MeshRootComp->AddImpulseAtLocation(ForwardVector * 1000.0f * MeshRootComp->GetMass(), OutHit.ImpactPoint);
+								if (MeshRootComp != nullptr)
+								{
+									//MeshRootComp->AddForce(ForwardVector * 100000 * MeshRootComp->GetMass());
+									MeshRootComp->AddImpulseAtLocation(ForwardVector * 1000.0f * MeshRootComp->GetMass(), OutHit.ImpactPoint);
+								}
+								AEnemy* Enemy = Cast<AEnemy>(OutHit.GetActor());
+								if (Enemy != nullptr)
+								{
+									Enemy->currentHealth -= dmg;
+									if (Enemy->currentHealth <= 0)
+									{
+										Enemy->kill();
+									}
+								}
 							}
 
 						}
 						if (GEngine)
 						{
-							GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("You Are Hitting: %s"), *OutHit.GetActor()->GetName()));
+							if (OutHit.GetActor() != nullptr)
+							{
+								GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("You Are Hitting: %s"), *OutHit.GetActor()->GetName()));
+							}
 						}
 					}
 				}
