@@ -59,7 +59,6 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	BaseHealth *= HealthMod;
 	XpToNextLevel = BaseXpToNextLevel;
 	CurrentHealth = BaseHealth;
 	TotalAmmo = StartAmmo;
@@ -240,8 +239,10 @@ void APlayerCharacter::Tick(float DeltaTime)
 										{
 											CurrentXp = 0;
 											XpToNextLevel *= XpInflationRate;
-											XpInflationRate *= 1.5;
 											CurrentLevel++;
+
+											BaseHealth *= HealthMod;
+											CurrentHealth *= HealthMod;
 										}
 									}
 								}
