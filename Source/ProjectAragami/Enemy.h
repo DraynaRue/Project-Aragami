@@ -39,10 +39,10 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, Category = Enemy)
 	UAISenseConfig_Sight* sightConfig;
 
-	UPROPERTY(EditAnywhere, Category = Enemy)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Enemy)
 	int maxHealth;
 
-	UPROPERTY(EditAnywhere, Category = Enemy)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Enemy)
 	int currentHealth;
 
 	UPROPERTY(EditAnywhere, Category = Enemy)
