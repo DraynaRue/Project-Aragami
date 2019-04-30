@@ -189,13 +189,13 @@ void APlayerCharacter::Tick(float DeltaTime)
 			if (canFire && RoundsInMag > 0)
 			{
 				FHitResult OutHit;
-				FVector Start = FP_Gun->GetComponentLocation();
-
+				FVector Start = FirstPersonCameraComponent->GetComponentLocation();
 				FVector ForwardVector = FirstPersonCameraComponent->GetForwardVector();
 				FVector End = ((ForwardVector * 10000.0f) + Start);
 				FCollisionQueryParams CollisionParams;
 
-				DrawDebugLine(World, Start, End, FColor::Green, true);
+				//DrawDebugLine(World, Start, End, FColor::Green, true);
+				FVector LineStart = FP_Gun->GetComponentLocation();
 
 				bool isHit = World->LineTraceSingleByChannel(OutHit, Start, End, ECC_Visibility, CollisionParams);
 

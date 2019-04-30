@@ -100,7 +100,7 @@ void AEnemy::OnSensed(const TArray<AActor*>& updatedActors)
 		{
 			FVector dir = updatedActors[i]->GetActorLocation() - GetActorLocation();
 			dir.Z = 0.0f;	//reset as they may be at diff Z values
-			DrawDebugLine(GetWorld(), GetActorLocation(), GetActorLocation() + dir * 1000.0f, FColor::Red, true);
+			//DrawDebugLine(GetWorld(), GetActorLocation(), GetActorLocation() + dir * 1000.0f, FColor::Red, true);
 			currVel = dir.GetSafeNormal() * speed;	//set vel towards actor
 			setNewRotation(updatedActors[i]->GetActorLocation(), GetActorLocation());
 		}
