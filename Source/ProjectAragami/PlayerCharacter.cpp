@@ -249,13 +249,13 @@ void APlayerCharacter::Tick(float DeltaTime)
 							}
 
 						}
-						if (GEngine)
+						/*if (GEngine)
 						{
 							if (OutHit.GetActor() != nullptr)
 							{
 								GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("You Are Hitting: %s"), *OutHit.GetActor()->GetName()));
 							}
-						}
+						}*/
 					}
 				}
 
